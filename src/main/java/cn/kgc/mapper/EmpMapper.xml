@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.kgc.mapper.EmpMapper">
+    <!--2个表的关联关系=字段映射-->
+    <resultMap id="empMap" type="cn.kgc.domain.Emp">
+        <id property="eid" column="eid"></id>
+        <result property="ename" column="ename"></result>
+        <result property="esex" column="esex"></result>
+        <result property="estartime" column="estartime"></result>
+        <result property="epay" column="epay"></result>
+        <result property="deptDid" column="did"></result>
+        <!--映射部门-->
+        <association property="dept" javaType="cn.kgc.domain.Dept">
+            <id property="did" column="did"></id>
+            <result property="dname" column="dname"></result>
+            <result property="dtel" column="dtel"></result>
+        </association>
+    </resultMap>
+    <!--动态SQL查询-->
+    <select id="selectBySome" parameterType="cn.kgc.domain.EmpTerm" resultMap="empMap">
+        select e.*,d.dname,d.dtel
+        from emp e left join dept d on e.did=d.did
+        <where>
+            <if test="searchName!=null and searchName!=''">
+                e.ename like "%"#{searchName}"%"
+            </if>
+            <if test="startEpay!=null and startEpay!=''">
+                and e.epay &gt;= #{startEpay}
+            </if>
+            <if test="endEpay!=null and endEpay!=''">
+                and e.epay &lt;= #{endEpay}
+            </if>
+            <if test="startTime!=null">
+                and e.estartime &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and e.estartime &lt;= #{endTime}
+            </if>
+            <if test="searchDid!=null and searchDid!=''">
+                and e.did = #{searchDid}
+            </if>
+        </where>
+    </select>
+</mapper>
